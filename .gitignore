@@ -1,0 +1,20 @@
+# Working notes, not part of what is published.
+PLAN.md
+CLAUDE.md
+
+bin/
+.env
+.DS_Store
+web/infra/attestation/*.pem
+web/infra/backups/
+android/local.properties
+android/.gradle/
+android/.kotlin/
+android/build/
+android/app/build/
+
+# The release signing key and anything that unlocks it. Losing it means never
+# updating the app again; publishing it means anyone can ship as us.
+*.jks
+*.keystore
+android/keystore/

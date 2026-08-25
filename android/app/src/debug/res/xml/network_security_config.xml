@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- A debug build reaches a development server wherever it runs: the loopback
+         as an emulator sees it, or a laptop on the same wifi. -->
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

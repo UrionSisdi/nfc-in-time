@@ -1,0 +1,565 @@
+/* NFC in Time — landing
+   white  = physical object
+   grey   = supporting information
+   green  = time / active process
+   nothing else earns a colour.
+
+   Sizes are derived from the 1254 px wide mockup and expressed in --s,
+   one unit = 12.8 px at that width, so the whole page scales as one drawing. */
+
+:root {
+  /* Pure neutral black on purpose: a tinted background (R≠G≠B) shifts when
+     the browser converts it to the display profile, and an animated block
+     sitting on its own GPU layer skips that conversion — the mismatch shows
+     up as a rectangle that vanishes when the animation ends. At #000 both
+     paths land on the same value, so no seam can appear. */
+  --bg:       #000000;
+  --ink:      #EDEDEB;   /* off-white — headings, physical linework */
+  --muted:    #CBCDC9;   /* light grey — labels, hints */
+  --dim:      #6E736F;   /* deep grey — separators, ranks */
+  --time:     #A8D493;   /* pale fluorescent green — time only */
+  --time-dim: #8CB57B;
+  --rule:     rgba(200, 205, 200, .13);
+
+  --mono:     "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --grotesk:  "Archivo", "Helvetica Neue", Arial, sans-serif;
+
+  /* One unit, tracked from the mockup (12.8 px at 1254 px wide) and grown
+     on a shallow slope so 320 px and 4K both stay in proportion. */
+  --s:        clamp(9px, 0.72vw + 3.9px, 22px);
+  --pad:      clamp(14px, 4vw, 104px);
+}
+
+* { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+section { padding-left: var(--pad); padding-right: var(--pad); }
+
+.intro { display: none; }
+
+.intro-on { overflow: hidden; }
+
+/* `.is-out` keeps the overlay painted through its fade, after `intro-on`
+   has already been dropped from the root to give the page its scroll back */
+.intro-on .intro,
+.intro.is-out {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--s) * 3);
+  background: var(--bg);
+  transition: opacity .8s linear;
+}
+.intro.is-out { opacity: 0; pointer-events: none; }
+
+.intro__word {
+  margin: 0;
+  font-family: var(--mono);
+  font-weight: 200;
+  font-size: min(calc(var(--s) * 2.6), 7vw);
+  text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+  animation: intro-word 1.5s cubic-bezier(.16, .78, .28, 1) both;
+}
+
+@keyframes intro-word {
+  from { opacity: 0; letter-spacing: .12em; text-indent: .12em; }
+  to   { opacity: 1; letter-spacing: .52em; text-indent: .52em; }
+}
+
+/* a thin gauge filling for exactly as long as the intro lasts */
+.intro__bar {
+  width: min(calc(var(--s) * 22), 46vw);
+  height: 1px;
+  background: var(--rule);
+  overflow: hidden;
+}
+.intro__bar i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--time);
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: intro-bar var(--intro-dur, 3s) linear both;
+}
+
+@keyframes intro-bar { to { transform: scaleX(1); } }
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(calc(var(--s) * 1.3));
+  transition: opacity 1.7s cubic-bezier(.16, .78, .28, 1),
+              transform 1.7s cubic-bezier(.16, .78, .28, 1);
+  transition-delay: var(--d, 0s);
+}
+[data-reveal].is-in { opacity: 1; transform: none; }
+
+/* Once it has landed, drop the compositing layer entirely — a promoted
+   layer renders its own background and the seam shows up as a faint
+   rectangle over the page. */
+[data-reveal].is-done { transition: none; transform: none; opacity: 1; }
+
+section {
+  background: var(--bg);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero {
+  border-bottom: 1px solid var(--rule);
+  padding-top: calc(var(--s) * 3.6);
+  padding-bottom: calc(var(--s) * 6);
+  align-items: center;
+}
+
+.topbar {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.lang {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--s) * .55);
+  font-size: calc(var(--s) * .95);
+  letter-spacing: .18em;
+}
+.lang__sep { color: var(--dim); }
+.lang__opt {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--dim);
+  cursor: pointer;
+  transition: color .18s linear;
+}
+.lang__opt:hover,
+.lang__opt:focus-visible { color: var(--muted); outline: none; }
+.lang__opt[aria-current="true"] { color: var(--time); }
+
+.clock {
+  margin: auto 0;
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+}
+
+.clock__label {
+  margin: 0 0 calc(var(--s) * 2.6);
+  font-size: calc(var(--s) * 1.48);
+  font-weight: 300;
+  letter-spacing: .4em;
+  text-indent: .4em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.counter {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: calc(var(--s) * .5);
+  color: var(--time);
+  font-family: var(--grotesk);
+  font-variant-numeric: tabular-nums;
+  font-variation-settings: "wdth" 78;
+  font-weight: 300;
+  /* tall and narrow like the mockup — capped by width for phones and by
+     height for ultrawide/short viewports, so it never overflows either way */
+  font-size: min(calc(var(--s) * 8.4), 10.2vw, 21vh);
+}
+
+.counter__unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.counter__num {
+  font-weight: inherit;
+  font-size: 1em;
+  line-height: 1;
+  letter-spacing: .02em;
+  text-indent: .02em;
+  text-shadow: 0 0 calc(var(--s) * 2) rgba(168, 212, 147, .16);
+}
+
+.counter__cap {
+  margin-top: calc(var(--s) * 1.5);
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: calc(var(--s) * 1.02);
+  font-weight: 300;
+  letter-spacing: .28em;
+  text-indent: .28em;
+  text-transform: uppercase;
+  color: var(--time-dim);
+}
+
+.counter__sep {
+  font-size: .78em;
+  line-height: 1.1;
+  color: var(--time);
+  opacity: .85;
+}
+
+.board {
+  /* Its own unit: the section must fit one screen, so the scale is capped by
+     viewport height as well as width. What the board costs depends on how many
+     rows it actually has — twenty of them about 94 units, three about forty —
+     so the runtime writes 1/cost into --fit and the cap follows the real table
+     instead of shrinking a short one to a sliver of the screen. */
+  --fit: 0.0106;
+  --u: clamp(6.5px, min(var(--s), calc(92vh * var(--fit))), 22px);
+
+  border-bottom: 1px solid var(--rule);
+  padding-top: calc(var(--u) * 4);
+  padding-bottom: calc(var(--u) * 4);
+}
+
+.stats {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.stat {
+  padding: 0 calc(var(--u) * 3.4);
+  text-align: center;
+  border-left: 1px solid var(--rule);
+}
+.stat:first-child { border-left: 0; }
+
+.stat dt {
+  font-size: calc(var(--u) * 1.02);
+  font-weight: 300;
+  letter-spacing: .16em;
+  text-indent: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.stat dd {
+  margin: calc(var(--u) * 1.1) 0 0;
+  font-size: calc(var(--u) * 1.95);
+  font-weight: 300;
+  letter-spacing: .06em;
+  color: var(--time);
+  font-variant-numeric: tabular-nums;
+}
+
+.board__title {
+  margin: calc(var(--u) * 4) 0 calc(var(--u) * 2.6);
+  text-align: center;
+  font-family: var(--mono);
+  font-weight: 300;
+  font-size: calc(var(--u) * 1.48);
+  letter-spacing: .4em;
+  text-indent: .4em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.top {
+  /* Full-bleed on a 3440 px screen throws rank/player and time/delta to
+     opposite edges. Bound it by text measure instead of a frozen pixel
+     width, so it still fills a phone but stays readable on a wall. */
+  width: min(100%, 112ch);
+  margin: 0 auto;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: calc(var(--u) * 1.1);
+  font-variant-numeric: tabular-nums;
+}
+
+.top th {
+  padding: 0 0 calc(var(--u) * .9);
+  font-weight: 300;
+  font-size: calc(var(--u) * .92);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--dim);
+  border-bottom: 1px solid var(--rule);
+}
+
+.top td {
+  padding: calc(var(--u) * .92) 0;
+  line-height: 1.35;
+  border-bottom: 1px solid var(--rule);
+  font-weight: 300;
+}
+.top tbody tr:last-child td { border-bottom: 0; }
+
+.top__rank { width: 6%;  text-align: left;  color: var(--dim); }
+.top__who  { width: 30%; text-align: left;  color: var(--ink); }
+.top__time { width: 32%; text-align: right; color: var(--time); white-space: nowrap;
+             padding-right: calc(var(--u) * 2.4); }
+.top__diff { width: 32%; text-align: right; white-space: nowrap;
+             color: var(--dim); }
+
+/* A short board has height to spare, so it spends it: taller rows and larger
+   type keep two players from reading as a stray line across the screen. */
+.board.is-sparse .top { font-size: calc(var(--u) * 1.32); }
+.board.is-sparse .top td { padding: calc(var(--u) * 1.75) 0; }
+.board.is-sparse .top th { padding-bottom: calc(var(--u) * 1.2); }
+
+td.top__who { letter-spacing: .06em; }
+.top__empty { text-align: center; color: var(--dim); letter-spacing: .06em; }
+td.top__diff.is-up { color: var(--time); }
+
+.mechanic {
+  padding-top: calc(var(--s) * 5);
+  padding-bottom: calc(var(--s) * 2.2);
+  text-align: center;
+}
+
+.mechanic__title {
+  /* Paired with the footer's auto top margin: two auto margins split the free
+     space evenly, so the drawing and its rules sit centred on the screen while
+     the footer stays pinned to the bottom. */
+  margin: auto 0 calc(var(--s) * 3.4);
+  font-family: var(--mono);
+  font-weight: 300;
+  font-size: calc(var(--s) * 1.72);
+  letter-spacing: .3em;
+  text-indent: .3em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.scheme {
+  display: grid;
+  /* a share of the viewport, not a frozen pixel width */
+  grid-template-columns: 1fr minmax(0, 46%) 1fr;
+  align-items: center;
+  gap: calc(var(--s) * 2);
+  width: 100%;
+}
+
+.rule {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--s) * 2.6);
+}
+
+.rule--left  { justify-content: flex-end;   text-align: right; }
+.rule--right { justify-content: flex-start; text-align: left; }
+
+.rule--below {
+  justify-content: center;
+  text-align: center;
+  margin-top: calc(var(--s) * 2.8);
+}
+
+/* One sentence per callout, set to a measure of its own: wider and it stops
+   reading as a label of the drawing, narrower and it breaks into a column. */
+.rule__text {
+  margin: 0;
+  max-width: calc(var(--s) * 21);
+  font-size: calc(var(--s) * 1.05);
+  font-weight: 300;
+  line-height: 1.6;
+  letter-spacing: .02em;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.rule--below .rule__text { max-width: calc(var(--s) * 40); }
+
+.rule__mark { flex: none; color: var(--time); }
+
+.diagram { margin: 0; position: relative; }
+
+/* Safari treats <picture> as an inline box, which would add a text baseline gap
+   between the two halves of the diagram. */
+.diagram picture { display: block; }
+.phone { width: 100%; }
+
+.tick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: calc(var(--s) * .94);
+  letter-spacing: .2em;
+  text-indent: .2em;
+  text-transform: uppercase;
+  color: var(--time-dim);
+}
+.tick span { line-height: 1; }
+.tick::before,
+.tick::after {
+  content: "";
+  width: 1px;
+  height: calc(var(--s) * 1.6);
+  background: repeating-linear-gradient(
+    to bottom, var(--dim) 0 3px, transparent 3px 7px);
+}
+.tick--top::before,
+.tick--bottom::after { display: none; }
+.tick--top span    { margin-bottom: calc(var(--s) * .6); }
+.tick--bottom span { margin-top: calc(var(--s) * .6); }
+
+.gap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--time);
+}
+
+.gap__rule { display: block; width: calc(var(--s) * 18); height: auto; }
+
+.gap__value {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: calc(var(--s) * 1.17);
+  letter-spacing: .06em;
+  color: var(--time);
+  pointer-events: none;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: calc(var(--s) * 1.2) calc(var(--s) * 2.2);
+  width: 100%;
+  /* auto beats the section's justify-content: the footer drops to the bottom of
+     the screen instead of floating under the diagram. */
+  margin: auto 0 0;
+  padding-top: calc(var(--s) * 1.5);
+  border-top: 1px solid var(--rule);
+  font-family: var(--mono);
+  font-weight: 300;
+  font-size: calc(var(--s) * .95);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+
+.foot__cta { color: var(--ink); }
+
+.foot__links {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--s) * 2.2);
+}
+
+.foot__link {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--s) * .8);
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .18s linear;
+}
+
+.foot__link:hover,
+.foot__link:focus-visible { color: var(--time); outline: none; }
+
+.foot__ico { flex: none; }
+
+.foot__by { margin-left: auto; color: var(--dim); }
+
+@media (max-width: 860px) {
+  /* The captions stay on their own sides at every width: dropped under the
+     drawing they stop reading as labels of the phone above and below. The
+     drawing gives up the width instead. */
+  .scheme { grid-template-columns: 1fr minmax(0, 40%) 1fr; gap: calc(var(--s) * .9); }
+  .rule { gap: calc(var(--s) * 1.1); }
+  /* The callouts keep their sides at every width, so the column is narrow and
+     the sentence has to shrink into it — with hyphenation, or one long Russian
+     word leaves a hole across half the line. */
+  .rule__text {
+    max-width: none;
+    font-size: calc(var(--s) * .84);
+    line-height: 1.5;
+    hyphens: auto;
+  }
+  /* Tied to --s rather than to the column, so it has to shrink with it or it
+     would overflow the middle track. */
+  .gap__rule { width: calc(var(--s) * 11); }
+
+  .foot { justify-content: center; text-align: center; }
+  .foot__by { margin-left: 0; }
+}
+
+@media (max-width: 620px) {
+  :root { --s: clamp(9px, 2.9vw, 14px); }
+
+  .hero { padding-bottom: calc(var(--s) * 4); }
+  .counter { font-size: min(calc(var(--s) * 5.4), 9.6vw, 18vh); gap: calc(var(--s) * .25); }
+  .counter__cap { font-size: calc(var(--s) * .8); letter-spacing: .16em; text-indent: .16em; }
+
+  /* Four fixed tracks instead of a wrapping row: the metrics belong on one
+     line, so the labels wrap inside their own column and the values stay
+     aligned across all four. Three tracks are sized to their own word and
+     everything left over goes to the long label — equal columns would starve
+     it and pad the short ones. */
+  .stats { display: grid; grid-template-columns: repeat(3, auto) minmax(0, 1fr); }
+  .stat { display: grid; grid-template-rows: 1fr auto; padding: 0 calc(var(--u) * .9); }
+  .stat dt {
+    white-space: normal;
+    font-size: calc(var(--u) * .92);
+    letter-spacing: .08em;
+    text-indent: .08em;
+  }
+  .stat dd { margin-top: calc(var(--u) * .8); font-size: calc(var(--u) * 1.6); }
+
+  .scheme { grid-template-columns: 1fr minmax(0, 36%) 1fr; }
+  .gap__rule { width: calc(var(--s) * 9); }
+
+  .rule__text { font-size: calc(var(--s) * .76); line-height: 1.45; letter-spacing: 0; }
+  /* Nothing is competing for the width under the drawing. */
+  .rule--below .rule__text { font-size: calc(var(--s) * .92); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { transition: none; opacity: 1; transform: none; }
+  .foot__link, .lang__opt { transition: none; }
+  .intro__word { animation: none; letter-spacing: .52em; text-indent: .52em; }
+  .intro__bar  { display: none; }
+}

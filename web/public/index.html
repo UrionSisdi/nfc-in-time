@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NFC in Time</title>
+<meta name="description" content="Time changes hands. An NFC game after the film In Time (2011).">
+<meta name="theme-color" content="#000000">
+
+<meta property="og:title" content="NFC in Time">
+<meta property="og:description" content="Time changes hands. An NFC game after the film In Time (2011).">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,200..600&family=IBM+Plex+Mono:wght@200;300;400&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/styles.css">
+
+<script>
+/* Decided here, in <head>, so the page never flashes before the intro covers it.
+   The intro replays only for a visitor who has been away for over ten minutes. */
+(function () {
+  var GAP = 600000;
+  try {
+    var seen = +localStorage.getItem('nfcit.seen') || 0;
+    if (Date.now() - seen > GAP) document.documentElement.classList.add('intro-on');
+  } catch (e) {
+    document.documentElement.classList.add('intro-on');
+  }
+})();
+</script>
+</head>
+<body>
+
+<div class="intro" id="intro" role="presentation">
+  <p class="intro__word">NFC in Time</p>
+  <div class="intro__bar"><i></i></div>
+</div>
+
+<main>
+
+  <section class="hero">
+
+    <div class="topbar">
+      <!-- The name is set in the splash, not in the page; the outline still needs it. -->
+      <h1 class="sr-only">NFC in Time</h1>
+      <div class="lang" role="group" aria-label="Language" data-reveal>
+        <button class="lang__opt" type="button" data-lang="en">EN</button>
+        <span class="lang__sep" aria-hidden="true">/</span>
+        <button class="lang__opt" type="button" data-lang="ru">RU</button>
+      </div>
+    </div>
+
+    <div class="clock">
+      <p class="clock__label" data-i18n="world_time" data-reveal>Time in the world</p>
+
+      <div class="counter" id="counter" role="timer" aria-live="off" data-reveal>
+        <span class="counter__unit"><b class="counter__num" data-slot="years">&#8212;</b><i class="counter__cap" data-i18n="cap_years">Years</i></span>
+        <span class="counter__sep">:</span>
+        <span class="counter__unit"><b class="counter__num" data-slot="days">&#8212;</b><i class="counter__cap" data-i18n="cap_days">Days</i></span>
+        <span class="counter__sep">:</span>
+        <span class="counter__unit"><b class="counter__num" data-slot="hours">&#8212;</b><i class="counter__cap" data-i18n="cap_hours">Hours</i></span>
+        <span class="counter__sep">:</span>
+        <span class="counter__unit"><b class="counter__num" data-slot="minutes">&#8212;</b><i class="counter__cap" data-i18n="cap_min">Min</i></span>
+        <span class="counter__sep">:</span>
+        <span class="counter__unit"><b class="counter__num" data-slot="seconds">&#8212;</b><i class="counter__cap" data-i18n="cap_sec">Sec</i></span>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="board">
+
+    <dl class="stats" data-reveal>
+      <div class="stat"><dt data-i18n="s_alive">Alive</dt><dd data-stat="alive">&#8212;</dd></div>
+      <div class="stat"><dt data-i18n="s_dead">Zeroed</dt><dd data-stat="dead">&#8212;</dd></div>
+      <div class="stat"><dt data-i18n="s_deals">Deals</dt><dd data-stat="deals">&#8212;</dd></div>
+      <div class="stat"><dt data-i18n="s_transferred">Transferred in a day</dt><dd data-stat="transferred">&#8212;</dd></div>
+    </dl>
+
+    <h2 class="board__title" data-i18n="top" data-reveal>Top 20</h2>
+
+    <table class="top" data-reveal>
+      <thead>
+        <tr>
+          <th class="top__rank" data-i18n="t_rank" scope="col">#</th>
+          <th class="top__who"  data-i18n="t_player" scope="col">Player</th>
+          <th class="top__time" data-i18n="t_time" scope="col">Time</th>
+          <th class="top__diff" data-i18n="t_diff" scope="col">&#916; 24h</th>
+        </tr>
+      </thead>
+      <tbody id="top-body"></tbody>
+    </table>
+
+  </section>
+
+  <section class="mechanic">
+
+    <h2 class="mechanic__title" data-i18n="mechanic" data-reveal>Time changes hands</h2>
+
+    <div class="scheme">
+
+      <div class="rule rule--left" data-reveal>
+        <p class="rule__text" data-i18n="r1">The hand on top takes, the hand below gives — and the roles swap the moment you turn the devices over</p>
+        <svg class="rule__mark" viewBox="0 0 12 20" width="12" height="20" fill="none" aria-hidden="true">
+          <g stroke="currentColor" stroke-width="1" stroke-linecap="square">
+            <path d="M6 19V2"/><path d="M1.5 6.5 6 2l4.5 4.5"/>
+          </g>
+        </svg>
+      </div>
+
+      <figure class="diagram" data-reveal>
+
+        <div class="tick tick--top"><span>NFC</span></div>
+        <picture>
+          <source type="image/webp" srcset="/phone-top.webp">
+          <img class="phone" src="/phone-top.png" alt="" width="1293" height="76">
+        </picture>
+
+        <div class="gap">
+          <svg class="gap__rule" viewBox="0 0 240 116" width="240" height="116" fill="none" aria-hidden="true">
+            <g stroke="currentColor" stroke-width="1" stroke-linecap="square">
+              <path d="M120 42V8" stroke-dasharray="3 4"/>
+              <path d="M115.5 12.5 120 8l4.5 4.5"/>
+              <path d="M120 74v34" stroke-dasharray="3 4"/>
+              <path d="M115.5 103.5 120 108l4.5-4.5"/>
+            </g>
+          </svg>
+          <span class="gap__value" id="gap-value">127 mm</span>
+        </div>
+
+        <picture>
+          <source type="image/webp" srcset="/phone-bottom.webp">
+          <img class="phone" src="/phone-bottom.png" alt="Two phones back to back, NFC antennas aligned" width="1293" height="76">
+        </picture>
+        <div class="tick tick--bottom"><span>NFC</span></div>
+
+      </figure>
+
+      <div class="rule rule--right" data-reveal>
+        <svg class="rule__mark" viewBox="0 0 12 20" width="12" height="20" fill="none" aria-hidden="true">
+          <path d="M1 10h10" stroke="currentColor" stroke-width="1" stroke-linecap="square"/>
+        </svg>
+        <p class="rule__text" data-i18n="r2">Hold the devices in balance and time does not move in either direction</p>
+      </div>
+
+    </div>
+
+    <div class="rule rule--below" data-reveal>
+      <p class="rule__text" data-i18n="r3">Holding on is both the payoff and the risk: by the thirtieth second the stake is years per second</p>
+    </div>
+
+    <footer class="foot">
+      <span class="foot__cta" data-i18n="get">Your time is running</span>
+
+      <span class="foot__links">
+        <a class="foot__link" href="https://github.com/urionsisdi/nfc-in-time/releases/latest">
+          <svg class="foot__ico" viewBox="0 0 16 16" width="12" height="12" fill="none" aria-hidden="true">
+            <g stroke="currentColor" stroke-width="1" stroke-linecap="square">
+              <path d="M8 1v11"/><path d="M3.5 7.5 8 12l4.5-4.5"/><path d="M2 15h12"/>
+            </g>
+          </svg>
+          <span data-i18n="apk">Download APK</span>
+        </a>
+        <a class="foot__link" href="https://github.com/urionsisdi/nfc-in-time">
+          <svg class="foot__ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+            <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+          </svg>
+          GitHub
+        </a>
+      </span>
+
+      <span class="foot__by"><span data-i18n="by">Made by</span> Yury Yurov</span>
+    </footer>
+
+  </section>
+
+</main>
+
+<script src="/main.js"></script>
+</body>
+</html>

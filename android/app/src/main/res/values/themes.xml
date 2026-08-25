@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Black from the first frame: the window background is what shows while the
+         activity is still starting, and any other colour flashes. -->
+    <style name="Theme.NfcInTime" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@drawable/window_background</item>
+        <item name="android:navigationBarColor">#000000</item>
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

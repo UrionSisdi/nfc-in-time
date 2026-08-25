@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What shows while the activity starts: the same T as the launcher icon, on
+     the same black. Android 12 draws its own splash over this from the icon; on
+     29 and 30 this layer is the whole of it. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/ic_launcher_background" />
+    <item
+        android:width="72dp"
+        android:height="72dp"
+        android:drawable="@drawable/ic_launcher_foreground"
+        android:gravity="center" />
+</layer-list>

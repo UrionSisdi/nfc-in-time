@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- A debug build talks to `make dev` over plain HTTP; the release build has
+         no such exemption and reaches the server over TLS only. -->
+    <application android:networkSecurityConfig="@xml/network_security_config" />
+</manifest>

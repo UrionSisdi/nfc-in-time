@@ -1,0 +1,89 @@
+# Production stack: Caddy terminates TLS for the real domain and proxies to the
+# API, which serves both the landing page and /v1. Only Caddy is published.
+name: nfcit
+
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-nfcit}
+      POSTGRES_USER: ${POSTGRES_USER:-nfcit}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nfcit} -d ${POSTGRES_DB:-nfcit}"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ..
+      dockerfile: infra/docker/server.Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NFCIT_DB: postgres://${POSTGRES_USER:-nfcit}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-nfcit}?sslmode=disable
+      NFCIT_AUTH_MODE: telegram
+      NFCIT_TELEGRAM_CLIENT_ID: ${NFCIT_TELEGRAM_CLIENT_ID:?set it in .env}
+      NFCIT_ATTESTATION: ${NFCIT_ATTESTATION:-chain}
+      NFCIT_ATTESTATION_ROOTS: /etc/nfcit/google-attestation-roots.pem
+      NFCIT_ATTESTATION_APP_DIGEST: ${NFCIT_ATTESTATION_APP_DIGEST}
+      NFCIT_APP_VERSION_CODE: ${NFCIT_APP_VERSION_CODE:-0}
+      NFCIT_APP_VERSION_NAME: ${NFCIT_APP_VERSION_NAME:-}
+      NFCIT_APP_URL: ${NFCIT_APP_URL:-}
+      # Caddy is the only thing in front of the API, so its forwarded address
+      # is the one to rate-limit on.
+      NFCIT_TRUST_PROXY: "true"
+      # Egress proxy, for hosts where an upstream the server depends on is not
+      # routable. Empty by default, and Go's transport then connects directly.
+      # NFCIT_NO_PROXY keeps reachable upstreams off the proxy.
+      HTTPS_PROXY: ${NFCIT_HTTPS_PROXY:-}
+      NO_PROXY: ${NFCIT_NO_PROXY:-}
+    volumes:
+      # Mounted as a directory: a bind mount of a file that is not there yet
+      # silently becomes an empty directory.
+      - ./attestation:/etc/nfcit:ro
+    restart: unless-stopped
+
+  backup:
+    image: postgres:18-alpine
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGHOST: db
+      PGDATABASE: ${POSTGRES_DB:-nfcit}
+      PGUSER: ${POSTGRES_USER:-nfcit}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      NFCIT_BACKUP_INTERVAL_SECONDS: ${NFCIT_BACKUP_INTERVAL_SECONDS:-43200}
+      NFCIT_BACKUP_KEEP: ${NFCIT_BACKUP_KEEP:-14}
+    volumes:
+      - ./backup/backup.sh:/usr/local/bin/backup.sh:ro
+      - ${NFCIT_BACKUP_DIR:-./backups}:/backups
+    entrypoint: ["sh", "/usr/local/bin/backup.sh"]
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    depends_on:
+      - api
+    environment:
+      NFCIT_DOMAIN: ${NFCIT_DOMAIN:?set NFCIT_DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
