@@ -5,6 +5,9 @@ time changes hands by touching two phones together. Hold two phones back to back
 and the one held screen up takes from the one below, faster every second the
 contact lasts; twenty-five years are issued once per Telegram account.
 
+The live board and the rules: [in-time-nfc.ru](https://in-time-nfc.ru). The APK
+is on the [releases page](https://github.com/urionsisdi/nfc-in-time/releases/latest).
+
     web/public    landing page — no build step, plain HTML, CSS and JS
     web/server    Go API and static host, one binary
     web/infra     Docker Compose stacks, Dockerfile, Caddy
