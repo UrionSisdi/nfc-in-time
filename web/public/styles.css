@@ -552,6 +552,14 @@ td.top__diff.is-up { color: var(--time); }
   .scheme { grid-template-columns: 1fr minmax(0, 36%) 1fr; }
   .gap__rule { width: calc(var(--s) * 9); }
 
+  /* A phone has no room for two full spans side by side: a balance and a
+     signed delta, both years-and-days, run into the gutter at the shared
+     scale, so the table drops below it and the sparse bonus shrinks too. */
+  .top { font-size: calc(var(--u) * .92); }
+  .board.is-sparse .top { font-size: calc(var(--u) * 1.04); }
+  .top th { font-size: calc(var(--u) * .8); letter-spacing: .12em; }
+  .top__time { padding-right: calc(var(--u) * 1.2); }
+
   .rule__text { font-size: calc(var(--s) * .76); line-height: 1.45; letter-spacing: 0; }
   /* Nothing is competing for the width under the drawing. */
   .rule--below .rule__text { font-size: calc(var(--s) * .92); }

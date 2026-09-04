@@ -65,7 +65,10 @@ func run(log *slog.Logger) error {
 		}
 	}
 
-	srv := api.New(cfg, st, auth, attester, log)
+	srv, err := api.New(cfg, st, auth, attester, log)
+	if err != nil {
+		return err
+	}
 	go srv.Run(ctx)
 
 	httpSrv := &http.Server{

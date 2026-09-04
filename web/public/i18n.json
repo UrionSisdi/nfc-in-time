@@ -1,0 +1,102 @@
+{
+  "en": {
+    "title": "NFC in Time — an NFC game after the film In Time",
+    "blurb": "Time changes hands. Hold two Android phones back to back and the one on top takes seconds from the one below, faster the longer you hold. Live board, free APK.",
+    "world_time": "Time in the world",
+    "cap_years": "Years",
+    "cap_days": "Days",
+    "cap_hours": "Hours",
+    "cap_min": "Min",
+    "cap_sec": "Sec",
+    "s_alive": "Alive",
+    "s_dead": "Zeroed",
+    "s_deals": "Deals",
+    "s_transferred": "Transferred in a day",
+    "top": "Top 20",
+    "t_rank": "#",
+    "t_player": "Player",
+    "t_time": "Time",
+    "t_diff": "Δ 24h",
+    "t_empty": "Nobody is playing yet",
+    "mechanic": "Time changes hands",
+    "r1": "The hand on top takes, the hand below gives — and the roles swap the moment you turn the devices over",
+    "r2": "Hold the devices in balance and time does not move in either direction",
+    "r3": "Holding on is both the payoff and the risk: by the thirtieth second the stake is years per second",
+    "mm": "mm",
+    "get": "Your time is running",
+    "apk": "Download APK",
+    "by": "Made by",
+    "y": [
+      "year",
+      "years"
+    ],
+    "d": [
+      "day",
+      "days"
+    ],
+    "h": [
+      "hour",
+      "hours"
+    ],
+    "m": [
+      "minute",
+      "minutes"
+    ],
+    "u_y": "y",
+    "u_d": "d",
+    "u_h": "h",
+    "u_m": "m"
+  },
+  "ru": {
+    "title": "NFC in Time — NFC-игра по фильму «Время»",
+    "blurb": "Время меняет руки. Приложите два Android-телефона спинками — верхний забирает секунды у нижнего, и тем быстрее, чем дольше вы держите. Живое табло, бесплатный APK.",
+    "world_time": "Времени в мире",
+    "cap_years": "Лет",
+    "cap_days": "Дней",
+    "cap_hours": "Часов",
+    "cap_min": "Мин",
+    "cap_sec": "Сек",
+    "s_alive": "Живых",
+    "s_dead": "Обнулены",
+    "s_deals": "Сделок",
+    "s_transferred": "Передано за сутки",
+    "top": "Топ 20",
+    "t_rank": "#",
+    "t_player": "Игрок",
+    "t_time": "Время",
+    "t_diff": "Δ 24ч",
+    "t_empty": "Пока никто не играет",
+    "mechanic": "Время меняет руки",
+    "r1": "Рука сверху забирает, рука снизу отдаёт — и роли меняются в ту же секунду, как вы развернёте устройства",
+    "r2": "Держите равновесие между устройствами — и время не двигается ни в одну сторону",
+    "r3": "Держать дольше и выгоднее, и опаснее: к тридцатой секунде ставка в игре — годы за секунду",
+    "mm": "мм",
+    "get": "Время пошло",
+    "apk": "Скачать APK",
+    "by": "Сделал",
+    "y": [
+      "год",
+      "года",
+      "лет"
+    ],
+    "d": [
+      "день",
+      "дня",
+      "дней"
+    ],
+    "h": [
+      "час",
+      "часа",
+      "часов"
+    ],
+    "m": [
+      "минута",
+      "минуты",
+      "минут"
+    ],
+    "u_y": "г.",
+    "u_d": "д.",
+    "u_h": "ч.",
+    "u_m": "м."
+  }
+}

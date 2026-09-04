@@ -11,73 +11,41 @@
   var TOP_URL   = '/v1/top';
   var POLL_MS   = 60000;
 
-  var DICT = {
-    en: {
-      world_time: 'Time in the world',
-      cap_years: 'Years', cap_days: 'Days', cap_hours: 'Hours',
-      cap_min: 'Min', cap_sec: 'Sec',
-      s_alive: 'Alive', s_dead: 'Zeroed', s_deals: 'Deals',
-      s_transferred: 'Transferred in a day',
-      top: 'Top 20',
-      t_rank: '#', t_player: 'Player', t_time: 'Time', t_diff: 'Δ 24h',
-      t_empty: 'Nobody is playing yet',
-      mechanic: 'Time changes hands',
-      r1: 'The hand on top takes, the hand below gives — and the roles swap '
-        + 'the moment you turn the devices over',
-      r2: 'Hold the devices in balance and time does not move in either direction',
-      r3: 'Holding on is both the payoff and the risk: by the thirtieth second '
-        + 'the stake is years per second',
-      mm: 'mm',
-      get: 'Your time is running', apk: 'Download APK', by: 'Made by',
-      y: ['year', 'years'], d: ['day', 'days'],
-      h: ['hour', 'hours'], m: ['minute', 'minutes'],
-      u_y: 'y', u_d: 'd', u_h: 'h', u_m: 'm'
-    },
-    ru: {
-      world_time: 'Времени в мире',
-      cap_years: 'Лет', cap_days: 'Дней',
-      cap_hours: 'Часов', cap_min: 'Мин',
-      cap_sec: 'Сек',
-      s_alive: 'Живых',
-      s_dead: 'Обнулены',
-      s_deals: 'Сделок',
-      s_transferred: 'Передано за сутки',
-      top: 'Топ 20',
-      t_rank: '#', t_player: 'Игрок',
-      t_time: 'Время', t_diff: 'Δ 24ч',
-      t_empty: 'Пока никто не играет',
-      mechanic: 'Время меняет руки',
-      r1: 'Рука сверху забирает, рука снизу отдаёт — и роли меняются в ту же '
-        + 'секунду, как вы развернёте устройства',
-      r2: 'Держите равновесие между устройствами — и время не двигается '
-        + 'ни в одну сторону',
-      r3: 'Держать дольше и выгоднее, и опаснее: к тридцатой секунде ставка '
-        + 'в игре — годы за секунду',
-      mm: 'мм',
-      get: 'Время пошло',
-      apk: 'Скачать APK',
-      by: 'Сделал',
-      y: ['год', 'года', 'лет'],
-      d: ['день', 'дня', 'дней'],
-      h: ['час', 'часа', 'часов'],
-      m: ['минута', 'минуты', 'минут'],
-      u_y: 'г.', u_d: 'д.', u_h: 'ч.', u_m: 'м.'
-    }
-  };
+  /* One table, read by both sides: the server renders the page from i18n.json
+     and hands the whole of it to the runtime, which needs the other language
+     for the switch and the plural forms for every number it prints. */
+  var DICT = window.NFCIT_I18N;
 
-  var lang = pickLang();
-
-  function pickLang() {
-    var saved;
-    try { saved = localStorage.getItem('nfcit.lang'); } catch (e) {}
-    if (DICT[saved]) return saved;
-    return /^ru\b/i.test(navigator.language || '') ? 'ru' : 'en';
-  }
+  /* The address decides the language, not the browser: the head script has
+     already moved a Russian-speaking visitor to /ru/ and stamped <html lang>. */
+  var SITE = 'https://in-time-nfc.ru/';
+  var lang = document.documentElement.lang === 'ru' ? 'ru' : 'en';
 
   function t(key) { return DICT[lang][key]; }
 
+  function attr(selector, name, value) {
+    var el = document.querySelector(selector);
+    if (el) el.setAttribute(name, value);
+  }
+
+  /* The title, the description and the sharing card are translated too, and a
+     crawler reads them per URL — so they are rewritten with everything else. */
+  function applyHead() {
+    var url = SITE + (lang === 'ru' ? 'ru/' : '');
+    document.title = t('title');
+    attr('#canonical', 'href', url);
+    attr('#og-url', 'content', url);
+    attr('#og-locale', 'content', lang === 'ru' ? 'ru_RU' : 'en_US');
+    attr('meta[name="description"]', 'content', t('blurb'));
+    attr('meta[property="og:title"]', 'content', t('title'));
+    attr('meta[property="og:description"]', 'content', t('blurb'));
+    attr('meta[name="twitter:title"]', 'content', t('title'));
+    attr('meta[name="twitter:description"]', 'content', t('blurb'));
+  }
+
   function applyLang() {
     document.documentElement.lang = lang;
+    applyHead();
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
       el.textContent = t(el.dataset.i18n);
     });
@@ -91,10 +59,17 @@
 
   document.querySelectorAll('.lang__opt').forEach(function (btn) {
     btn.addEventListener('click', function () {
+      if (btn.dataset.lang === lang) return;
       lang = btn.dataset.lang;
       try { localStorage.setItem('nfcit.lang', lang); } catch (e) {}
+      if (history.pushState) history.pushState(null, '', lang === 'ru' ? '/ru/' : '/');
       applyLang();
     });
+  });
+
+  window.addEventListener('popstate', function () {
+    lang = location.pathname.indexOf('/ru') === 0 ? 'ru' : 'en';
+    applyLang();
   });
 
   /* Neither the counter nor the table is drawn before the server answers.

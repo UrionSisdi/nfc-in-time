@@ -3,6 +3,7 @@
 package api
 
 import (
+	"bytes"
 	"context"
 	"log/slog"
 	"net/http"
@@ -25,6 +26,7 @@ type Server struct {
 	auth     telegram.Verifier
 	attester *attest.Verifier
 	limiter  *limiter
+	landing  *landing
 
 	challenges *challenges
 	board      atomic.Pointer[snapshot]
@@ -36,7 +38,7 @@ type snapshot struct {
 	top   []store.TopEntry
 }
 
-func New(cfg config.Config, st *store.Store, auth telegram.Verifier, attester *attest.Verifier, log *slog.Logger) *Server {
+func New(cfg config.Config, st *store.Store, auth telegram.Verifier, attester *attest.Verifier, log *slog.Logger) (*Server, error) {
 	s := &Server{
 		cfg:        cfg,
 		store:      st,
@@ -47,7 +49,15 @@ func New(cfg config.Config, st *store.Store, auth telegram.Verifier, attester *a
 		log:        log,
 	}
 	s.board.Store(&snapshot{board: store.Board{AsOf: time.Now().Unix()}})
-	return s
+
+	if cfg.StaticDir != "" {
+		l, err := loadLanding(cfg.StaticDir)
+		if err != nil {
+			return nil, err
+		}
+		s.landing = l
+	}
+	return s, nil
 }
 
 func (s *Server) Handler() http.Handler {
@@ -60,24 +70,39 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("POST /v1/auth/telegram", s.handleAuth)
 	mux.HandleFunc("POST /v1/sync", s.handleSync)
 
-	if s.cfg.StaticDir != "" {
+	if s.landing != nil {
 		mux.Handle("GET /", s.static())
 	}
 	return logRequests(s.log, mux)
 }
 
-// static serves the landing page, falling back to index.html so a deep link is
-// not a 404.
+// static answers on the two addresses the page is rendered for and on the files
+// beside it. Every other path is a 404 — serving the page under an arbitrary
+// address would put the same content in a search index under as many URLs as
+// anyone cares to request.
 func (s *Server) static() http.Handler {
-	dir := http.Dir(s.cfg.StaticDir)
-	files := http.FileServer(dir)
-	index := filepath.Join(s.cfg.StaticDir, "index.html")
+	files := http.FileServer(http.Dir(s.cfg.StaticDir))
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if _, err := os.Stat(filepath.Join(s.cfg.StaticDir, filepath.Clean(r.URL.Path))); err != nil {
-			http.ServeFile(w, r, index)
+		if r.URL.Path == "/ru" {
+			http.Redirect(w, r, "/ru/", http.StatusMovedPermanently)
 			return
 		}
+		if page, ok := s.landing.page(r.URL.Path); ok {
+			// The markup carries the board's shape, and that changes on
+			// deploy; the assets beside it are small and rarely touched.
+			w.Header().Set("cache-control", "no-cache")
+			w.Header().Set("content-type", "text/html; charset=utf-8")
+			http.ServeContent(w, r, "", s.landing.modTime, bytes.NewReader(page))
+			return
+		}
+
+		info, err := os.Stat(filepath.Join(s.cfg.StaticDir, filepath.Clean(r.URL.Path)))
+		if err != nil || info.IsDir() {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("cache-control", "public, max-age=3600")
 		files.ServeHTTP(w, r)
 	})
 }

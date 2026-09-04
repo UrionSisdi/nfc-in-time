@@ -1,4 +1,10 @@
 {$NFCIT_DOMAIN} {
 	encode zstd gzip
+	header Strict-Transport-Security "max-age=31536000; includeSubDomains"
 	reverse_proxy api:8080
+}
+
+# The same page under a second name is the same page in the index twice.
+www.{$NFCIT_DOMAIN} {
+	redir https://{$NFCIT_DOMAIN}{uri} permanent
 }

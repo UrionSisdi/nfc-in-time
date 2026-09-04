@@ -8,7 +8,7 @@ contact lasts; twenty-five years are issued once per Telegram account.
 The live board and the rules: [in-time-nfc.ru](https://in-time-nfc.ru). The APK
 is on the [releases page](https://github.com/urionsisdi/nfc-in-time/releases/latest).
 
-    web/public    landing page — no build step, plain HTML, CSS and JS
+    web/public    landing page — plain HTML, CSS and JS, one translation table
     web/server    Go API and static host, one binary
     web/infra     Docker Compose stacks, Dockerfile, Caddy
     android/      the app — Kotlin, Compose, NFC host card emulation

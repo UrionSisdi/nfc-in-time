@@ -1,0 +1,24 @@
+# NFC in Time
+
+> An NFC game after the film *In Time* (2011): everyone carries a countdown, and
+> time changes hands by touching two Android phones together.
+
+Every player starts with twenty-five years and spends a second per second. Held
+back to back over NFC, the phone lying screen up takes time from the one below
+it, and the rate climbs the longer the contact lasts — by the thirtieth second
+the stake is years per second. Held level, neither side moves; turning the
+phones over swaps the roles. Reaching zero ends the run. The twenty-five years
+are issued once per Telegram account, so a second balance is not one more phone
+away. The app is free and MIT-licensed, and ships as an APK rather than through
+a store. It needs Android 8.0 or newer and NFC.
+
+## Pages
+
+- [Landing page, English](https://in-time-nfc.ru/): the world clock, the top 20 board, the rules of the exchange
+- [Landing page, Russian](https://in-time-nfc.ru/ru/): the same page in Russian
+
+## Source and downloads
+
+- [Repository](https://github.com/urionsisdi/nfc-in-time): the Kotlin app, the Go server, the Compose deployment
+- [Latest APK](https://github.com/urionsisdi/nfc-in-time/releases/latest): the current release build
+- [Server notes](https://github.com/urionsisdi/nfc-in-time/blob/main/web/server/README.md): the API, the signing protocol, every environment variable

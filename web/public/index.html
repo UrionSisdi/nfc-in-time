@@ -1,15 +1,34 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{.Lang}}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NFC in Time</title>
-<meta name="description" content="Time changes hands. An NFC game after the film In Time (2011).">
+<title>{{.T.title}}</title>
+<meta name="description" content="{{.T.blurb}}">
 <meta name="theme-color" content="#000000">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 
-<meta property="og:title" content="NFC in Time">
-<meta property="og:description" content="Time changes hands. An NFC game after the film In Time (2011).">
+<link rel="canonical" id="canonical" href="{{.URL}}">
+<link rel="alternate" hreflang="en" href="https://in-time-nfc.ru/">
+<link rel="alternate" hreflang="ru" href="https://in-time-nfc.ru/ru/">
+<link rel="alternate" hreflang="x-default" href="https://in-time-nfc.ru/">
+
+<meta property="og:site_name" content="NFC in Time">
+<meta property="og:title" content="{{.T.title}}">
+<meta property="og:description" content="{{.T.blurb}}">
 <meta property="og:type" content="website">
+<meta property="og:url" id="og-url" content="{{.URL}}">
+<meta property="og:image" content="https://in-time-nfc.ru/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="NFC in Time — two phones back to back, time passing between them">
+<meta property="og:locale" id="og-locale" content="{{.Locale}}">
+<meta property="og:locale:alternate" content="{{.AltLocale}}">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{.T.title}}">
+<meta name="twitter:description" content="{{.T.blurb}}">
+<meta name="twitter:image" content="https://in-time-nfc.ru/og.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,17 +38,85 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/styles.css">
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://in-time-nfc.ru/#website",
+      "url": "https://in-time-nfc.ru/",
+      "name": "NFC in Time",
+      "description": "An NFC game after the film In Time (2011): everyone carries a countdown, and time changes hands by touching two phones together.",
+      "inLanguage": ["en", "ru"],
+      "publisher": { "@id": "https://in-time-nfc.ru/#author" }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://in-time-nfc.ru/#author",
+      "name": "Yury Yurov",
+      "url": "https://github.com/urionsisdi"
+    },
+    {
+      "@type": "MobileApplication",
+      "@id": "https://in-time-nfc.ru/#app",
+      "name": "NFC in Time",
+      "url": "https://in-time-nfc.ru/",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Android 8.0+",
+      "downloadUrl": "https://github.com/urionsisdi/nfc-in-time/releases/latest",
+      "installUrl": "https://github.com/urionsisdi/nfc-in-time/releases/latest",
+      "softwareHelp": "https://github.com/urionsisdi/nfc-in-time",
+      "license": "https://opensource.org/licenses/MIT",
+      "inLanguage": ["en", "ru"],
+      "author": { "@id": "https://in-time-nfc.ru/#author" },
+      "isBasedOn": {
+        "@type": "Movie",
+        "name": "In Time",
+        "datePublished": "2011",
+        "sameAs": "https://www.imdb.com/title/tt1637688/"
+      },
+      "description": "Everyone starts with twenty-five years and spends a second per second. Hold two phones back to back over NFC and the one held screen up takes time from the one below, faster every second the contact lasts; hold them level and nothing moves. Twenty-five years are issued once per Telegram account.",
+      "featureList": [
+        "Time transfers over NFC host card emulation, phone to phone",
+        "A shared live board of every player's remaining time",
+        "Sign-in through Telegram, one balance per account"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+  ]
+}
+</script>
+
 <script>
 /* Decided here, in <head>, so the page never flashes before the intro covers it.
-   The intro replays only for a visitor who has been away for over ten minutes. */
+   The intro replays only for a visitor who has been away for over ten minutes.
+
+   The page already arrives written in the language of its address. What is left
+   to the browser is sending a visitor who wants Russian to /ru/, before
+   anything is painted: the server will not read Accept-Language and answer one
+   URL with two different pages, because then neither is the page that gets
+   indexed. */
 (function () {
   var GAP = 600000;
+  var seen = 0, pref = null;
   try {
-    var seen = +localStorage.getItem('nfcit.seen') || 0;
-    if (Date.now() - seen > GAP) document.documentElement.classList.add('intro-on');
-  } catch (e) {
-    document.documentElement.classList.add('intro-on');
+    seen = +localStorage.getItem('nfcit.seen') || 0;
+    pref = localStorage.getItem('nfcit.lang');
+  } catch (e) {}
+
+  var wants = pref || (/^ru\b/i.test(navigator.language || '') ? 'ru' : 'en');
+  if (location.pathname === '/' && wants === 'ru') {
+    location.replace('/ru/' + location.search + location.hash);
+    return;
   }
+
+  if (Date.now() - seen > GAP) document.documentElement.classList.add('intro-on');
 })();
 </script>
 </head>
@@ -55,18 +142,18 @@
     </div>
 
     <div class="clock">
-      <p class="clock__label" data-i18n="world_time" data-reveal>Time in the world</p>
+      <p class="clock__label" data-i18n="world_time" data-reveal>{{.T.world_time}}</p>
 
       <div class="counter" id="counter" role="timer" aria-live="off" data-reveal>
-        <span class="counter__unit"><b class="counter__num" data-slot="years">&#8212;</b><i class="counter__cap" data-i18n="cap_years">Years</i></span>
+        <span class="counter__unit"><b class="counter__num" data-slot="years">&#8212;</b><i class="counter__cap" data-i18n="cap_years">{{.T.cap_years}}</i></span>
         <span class="counter__sep">:</span>
-        <span class="counter__unit"><b class="counter__num" data-slot="days">&#8212;</b><i class="counter__cap" data-i18n="cap_days">Days</i></span>
+        <span class="counter__unit"><b class="counter__num" data-slot="days">&#8212;</b><i class="counter__cap" data-i18n="cap_days">{{.T.cap_days}}</i></span>
         <span class="counter__sep">:</span>
-        <span class="counter__unit"><b class="counter__num" data-slot="hours">&#8212;</b><i class="counter__cap" data-i18n="cap_hours">Hours</i></span>
+        <span class="counter__unit"><b class="counter__num" data-slot="hours">&#8212;</b><i class="counter__cap" data-i18n="cap_hours">{{.T.cap_hours}}</i></span>
         <span class="counter__sep">:</span>
-        <span class="counter__unit"><b class="counter__num" data-slot="minutes">&#8212;</b><i class="counter__cap" data-i18n="cap_min">Min</i></span>
+        <span class="counter__unit"><b class="counter__num" data-slot="minutes">&#8212;</b><i class="counter__cap" data-i18n="cap_min">{{.T.cap_min}}</i></span>
         <span class="counter__sep">:</span>
-        <span class="counter__unit"><b class="counter__num" data-slot="seconds">&#8212;</b><i class="counter__cap" data-i18n="cap_sec">Sec</i></span>
+        <span class="counter__unit"><b class="counter__num" data-slot="seconds">&#8212;</b><i class="counter__cap" data-i18n="cap_sec">{{.T.cap_sec}}</i></span>
       </div>
     </div>
 
@@ -75,21 +162,21 @@
   <section class="board">
 
     <dl class="stats" data-reveal>
-      <div class="stat"><dt data-i18n="s_alive">Alive</dt><dd data-stat="alive">&#8212;</dd></div>
-      <div class="stat"><dt data-i18n="s_dead">Zeroed</dt><dd data-stat="dead">&#8212;</dd></div>
-      <div class="stat"><dt data-i18n="s_deals">Deals</dt><dd data-stat="deals">&#8212;</dd></div>
-      <div class="stat"><dt data-i18n="s_transferred">Transferred in a day</dt><dd data-stat="transferred">&#8212;</dd></div>
+      <div class="stat"><dt data-i18n="s_alive">{{.T.s_alive}}</dt><dd data-stat="alive">&#8212;</dd></div>
+      <div class="stat"><dt data-i18n="s_dead">{{.T.s_dead}}</dt><dd data-stat="dead">&#8212;</dd></div>
+      <div class="stat"><dt data-i18n="s_deals">{{.T.s_deals}}</dt><dd data-stat="deals">&#8212;</dd></div>
+      <div class="stat"><dt data-i18n="s_transferred">{{.T.s_transferred}}</dt><dd data-stat="transferred">&#8212;</dd></div>
     </dl>
 
-    <h2 class="board__title" data-i18n="top" data-reveal>Top 20</h2>
+    <h2 class="board__title" data-i18n="top" data-reveal>{{.T.top}}</h2>
 
     <table class="top" data-reveal>
       <thead>
         <tr>
-          <th class="top__rank" data-i18n="t_rank" scope="col">#</th>
-          <th class="top__who"  data-i18n="t_player" scope="col">Player</th>
-          <th class="top__time" data-i18n="t_time" scope="col">Time</th>
-          <th class="top__diff" data-i18n="t_diff" scope="col">&#916; 24h</th>
+          <th class="top__rank" data-i18n="t_rank" scope="col">{{.T.t_rank}}</th>
+          <th class="top__who"  data-i18n="t_player" scope="col">{{.T.t_player}}</th>
+          <th class="top__time" data-i18n="t_time" scope="col">{{.T.t_time}}</th>
+          <th class="top__diff" data-i18n="t_diff" scope="col">{{.T.t_diff}}</th>
         </tr>
       </thead>
       <tbody id="top-body"></tbody>
@@ -99,12 +186,12 @@
 
   <section class="mechanic">
 
-    <h2 class="mechanic__title" data-i18n="mechanic" data-reveal>Time changes hands</h2>
+    <h2 class="mechanic__title" data-i18n="mechanic" data-reveal>{{.T.mechanic}}</h2>
 
     <div class="scheme">
 
       <div class="rule rule--left" data-reveal>
-        <p class="rule__text" data-i18n="r1">The hand on top takes, the hand below gives — and the roles swap the moment you turn the devices over</p>
+        <p class="rule__text" data-i18n="r1">{{.T.r1}}</p>
         <svg class="rule__mark" viewBox="0 0 12 20" width="12" height="20" fill="none" aria-hidden="true">
           <g stroke="currentColor" stroke-width="1" stroke-linecap="square">
             <path d="M6 19V2"/><path d="M1.5 6.5 6 2l4.5 4.5"/>
@@ -129,7 +216,7 @@
               <path d="M115.5 103.5 120 108l4.5-4.5"/>
             </g>
           </svg>
-          <span class="gap__value" id="gap-value">127 mm</span>
+          <span class="gap__value" id="gap-value">127 {{.T.mm}}</span>
         </div>
 
         <picture>
@@ -144,17 +231,17 @@
         <svg class="rule__mark" viewBox="0 0 12 20" width="12" height="20" fill="none" aria-hidden="true">
           <path d="M1 10h10" stroke="currentColor" stroke-width="1" stroke-linecap="square"/>
         </svg>
-        <p class="rule__text" data-i18n="r2">Hold the devices in balance and time does not move in either direction</p>
+        <p class="rule__text" data-i18n="r2">{{.T.r2}}</p>
       </div>
 
     </div>
 
     <div class="rule rule--below" data-reveal>
-      <p class="rule__text" data-i18n="r3">Holding on is both the payoff and the risk: by the thirtieth second the stake is years per second</p>
+      <p class="rule__text" data-i18n="r3">{{.T.r3}}</p>
     </div>
 
     <footer class="foot">
-      <span class="foot__cta" data-i18n="get">Your time is running</span>
+      <span class="foot__cta" data-i18n="get">{{.T.get}}</span>
 
       <span class="foot__links">
         <a class="foot__link" href="https://github.com/urionsisdi/nfc-in-time/releases/latest">
@@ -163,7 +250,7 @@
               <path d="M8 1v11"/><path d="M3.5 7.5 8 12l4.5-4.5"/><path d="M2 15h12"/>
             </g>
           </svg>
-          <span data-i18n="apk">Download APK</span>
+          <span data-i18n="apk">{{.T.apk}}</span>
         </a>
         <a class="foot__link" href="https://github.com/urionsisdi/nfc-in-time">
           <svg class="foot__ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
@@ -173,13 +260,14 @@
         </a>
       </span>
 
-      <span class="foot__by"><span data-i18n="by">Made by</span> Yury Yurov</span>
+      <span class="foot__by"><span data-i18n="by">{{.T.by}}</span> Yury Yurov</span>
     </footer>
 
   </section>
 
 </main>
 
+<script>window.NFCIT_I18N = {{.Dict}};</script>
 <script src="/main.js"></script>
 </body>
 </html>

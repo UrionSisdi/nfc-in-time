@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /v1/
+
+Sitemap: https://in-time-nfc.ru/sitemap.xml
