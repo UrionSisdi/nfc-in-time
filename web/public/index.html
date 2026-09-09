@@ -30,9 +30,6 @@
 <meta name="twitter:description" content="{{.T.blurb}}">
 <meta name="twitter:image" content="https://in-time-nfc.ru/og.png">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,200..600&family=IBM+Plex+Mono:wght@200;300;400&display=swap" rel="stylesheet">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -49,13 +46,21 @@
       "name": "NFC in Time",
       "description": "An NFC game after the film In Time (2011): everyone carries a countdown, and time changes hands by touching two phones together.",
       "inLanguage": ["en", "ru"],
-      "publisher": { "@id": "https://in-time-nfc.ru/#author" }
+      "publisher": [
+        { "@id": "https://in-time-nfc.ru/#yury-yurov" },
+        { "@id": "https://in-time-nfc.ru/#danil-cumyshev" }
+      ]
     },
     {
       "@type": "Person",
-      "@id": "https://in-time-nfc.ru/#author",
+      "@id": "https://in-time-nfc.ru/#yury-yurov",
       "name": "Yury Yurov",
       "url": "https://github.com/urionsisdi"
+    },
+    {
+      "@type": "Person",
+      "@id": "https://in-time-nfc.ru/#danil-cumyshev",
+      "name": "Danil Cumyshev"
     },
     {
       "@type": "MobileApplication",
@@ -69,7 +74,10 @@
       "softwareHelp": "https://github.com/urionsisdi/nfc-in-time",
       "license": "https://opensource.org/licenses/MIT",
       "inLanguage": ["en", "ru"],
-      "author": { "@id": "https://in-time-nfc.ru/#author" },
+      "author": [
+        { "@id": "https://in-time-nfc.ru/#yury-yurov" },
+        { "@id": "https://in-time-nfc.ru/#danil-cumyshev" }
+      ],
       "isBasedOn": {
         "@type": "Movie",
         "name": "In Time",
@@ -260,7 +268,7 @@
         </a>
       </span>
 
-      <span class="foot__by"><span data-i18n="by">{{.T.by}}</span> Yury Yurov</span>
+      <span class="foot__by"><span data-i18n="by">{{.T.by}}</span> Yury Yurov &amp;&amp; Danil Cumyshev</span>
     </footer>
 
   </section>

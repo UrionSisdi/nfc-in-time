@@ -8,6 +8,10 @@ contact lasts; twenty-five years are issued once per Telegram account.
 The live board and the rules: [in-time-nfc.ru](https://in-time-nfc.ru). The APK
 is on the [releases page](https://github.com/urionsisdi/nfc-in-time/releases/latest).
 
+The idea is older than this repository: [urionsisdi/NFC](https://github.com/urionsisdi/NFC)
+is the 2020 prototype it grew out of, a Java app that did nothing but pass NDEF
+messages between two phones.
+
     web/public    landing page — plain HTML, CSS and JS, one translation table
     web/server    Go API and static host, one binary
     web/infra     Docker Compose stacks, Dockerfile, Caddy

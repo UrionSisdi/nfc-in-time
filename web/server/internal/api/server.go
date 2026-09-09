@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"log/slog"
+	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -81,6 +82,11 @@ func (s *Server) Handler() http.Handler {
 // address would put the same content in a search index under as many URLs as
 // anyone cares to request.
 func (s *Server) static() http.Handler {
+	// The runtime image carries no mime.types, and a font handed over as
+	// octet-stream is a font some browsers decline to use.
+	if err := mime.AddExtensionType(".woff2", "font/woff2"); err != nil {
+		s.log.Error("register woff2 media type", "error", err)
+	}
 	files := http.FileServer(http.Dir(s.cfg.StaticDir))
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
